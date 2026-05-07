@@ -8,7 +8,6 @@ from utils.download_models import download_model
 st.set_page_config(page_title="PetSource Data Tools", page_icon="🐾", layout="wide")
 
 with st.sidebar:
-    st.image("https://via.placeholder.com/150x80?text=PetSource", width=True)
     st.markdown("# PetSource Data Tools")
     st.markdown("---")
     
