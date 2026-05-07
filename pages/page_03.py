@@ -66,7 +66,3 @@ if image and model_ready:
             
             for emo, prob in zip(emociones, predictions):
                 st.progress(float(prob), text=f"{emo}: {prob:.1%}")
-            
-            with st.expander("📈 Ver probabilidades exactas"):
-                for emo, prob in zip(emociones, predictions):
-                    st.write(f"- {emo}: {prob:.4f} ({prob:.2%})")
