@@ -1,4 +1,9 @@
 import streamlit as st
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).parent))
+from utils.download_models import download_model
 
 st.set_page_config(page_title="PetSource Data Tools", page_icon="🐾", layout="wide")
 
@@ -21,3 +26,30 @@ with col1:
     st.info("📊 **Análisis de datos** - ¿Cúal es el producto que más se vende?")
 with col2:
     st.success("😊 **Analizador de emociones** - Sube una foto o usa la cámara")
+
+@st.cache_resource
+def load_model_with_auto_download():
+    """Carga el modelo, descargándolo primero si es necesario"""
+    
+    with st.spinner("🔍 Verificando modelo..."):
+        # Descargar modelo si no existe
+        model_path = download_model()
+        
+        # Mostrar progreso
+        st.info(f"📦 Modelo encontrado en: {model_path}")
+    
+    # Cargar el modelo
+    with st.spinner("🧠 Cargando modelo en memoria..."):
+        import tensorflow as tf
+        model = tf.keras.models.load_model(model_path)
+    
+    return model
+
+# Cargar modelo (solo una vez gracias a cache)
+try:
+    model = load_model_with_auto_download()
+    st.success("✅ Modelo listo para usar")
+    model_ready = True
+except Exception as e:
+    st.error(f"❌ Error cargando modelo: {e}")
+    model_ready = False

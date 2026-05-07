@@ -10,8 +10,7 @@ st.title("😊 Analizador de Emociones para Mascotas")
 
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model("models/best_dog_emotion_model.h5")
-    # return tf.keras.models.load_model("models/dog_emotion_classifier.h5")
+    return tf.keras.models.load_model("models/dog_emotion_classifier.h5")
 
 try:
     model = load_model()
