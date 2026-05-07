@@ -197,7 +197,7 @@ with tab_metricas:
             st.subheader("📉 Evolución del Entrenamiento")
             
             # Convertir a DataFrame (ya es un dict, no necesita conversión)
-            history  = history.pop("lr")
+            del history["lr"]
             history_df = pd.DataFrame(history)
             
             # Debug: mostrar las columnas disponibles (comenta después de verificar)
