@@ -110,7 +110,6 @@ with tab_prediccion:
                 st.markdown("---")
                 st.write("### Distribución de emociones")
                 
-                # Colores para cada emoción
                 colores = {
                     "Enojado 😠": "#ff4444",
                     "Triste 😢": "#4444ff",
@@ -128,29 +127,23 @@ with tab_prediccion:
 with tab_metricas:
     st.markdown("### 📈 Rendimiento del Modelo de Clasificación de Emociones")
     
-    # Cargar todos los datos
     history = load_training_history()
     report = load_classification_report()
     confusion = load_confusion_matrix()
     training_log = load_training_log()
     
-    # Verificar si hay datos
     if not any([history, report, confusion, training_log]):
         st.warning("⚠️ No se encontraron archivos de métricas en `models/model_metrics/`")
         st.info("Asegúrate de que los archivos generados durante el entrenamiento estén en la carpeta correcta.")
     else:
-        # ===== SECCIÓN 1: MÉTRICAS GLOBALES =====
         if report:
             st.subheader("🎯 Métricas por Clase")
             
-            # Convertir reporte a DataFrame para mejor visualización
             report_df = pd.DataFrame(report).transpose()
             
-            # Filtrar solo las clases (excluir accuracy, macro avg, weighted avg)
             classes = [c for c in report_df.index if c not in ['accuracy', 'macro avg', 'weighted avg']]
             report_classes = report_df.loc[classes]
             
-            # Mostrar métricas en columnas
             cols = st.columns(4)
             metricas = ['precision', 'recall', 'f1-score']
             colores_metricas = {"precision": "blue", "recall": "green", "f1-score": "orange"}
@@ -165,20 +158,16 @@ with tab_metricas:
                             delta=None
                         )
             
-            # Mostrar accuracy global
             if 'accuracy' in report_df.index:
                 acc = report_df.loc['accuracy', 'precision'] if 'precision' in report_df.columns else report_df.loc['accuracy']
                 st.success(f"### 🎯 Accuracy Global: **{acc:.2%}**")
         
-        # ===== SECCIÓN 2: MATRIZ DE CONFUSIÓN =====
         if confusion is not None:
             st.subheader("🔢 Matriz de Confusión")
             
-            # Dar formato a los nombres de las clases
             confusion.columns = [col.replace('_', ' ').title() for col in confusion.columns]
             confusion.index = [idx.replace('_', ' ').title() for idx in confusion.index]
             
-            # Mostrar como DataFrame con estilo
             st.dataframe(
                 confusion,
                 use_container_width=True,
@@ -188,30 +177,20 @@ with tab_metricas:
                 }
             )
             
-            # Mostrar heatmap textual
             st.caption("📖 **Interpretación**: Filas = Valores Reales, Columnas = Predicciones")
         
-        # ===== SECCIÓN 3: HISTORIAL DE ENTRENAMIENTO =====
-        # ===== SECCIÓN 3: HISTORIAL DE ENTRENAMIENTO =====
         if history:
             st.subheader("📉 Evolución del Entrenamiento")
             
-            # Convertir a DataFrame (ya es un dict, no necesita conversión)
             del history["lr"]
             history_df = pd.DataFrame(history)
             
-            # Debug: mostrar las columnas disponibles (comenta después de verificar)
-            # st.write("**Columnas disponibles:**", list(history_df.columns))
-            
-            # Verificar qué columnas existen realmente
             columnas_disponibles = history_df.columns.tolist()
             
-            # Gráfico de pérdida (loss)
             col_loss, col_acc = st.columns(2)
             
             with col_loss:
                 st.markdown("**Pérdida (Loss)**")
-                # Buscar columnas de loss
                 loss_cols = [col for col in columnas_disponibles if 'loss' in col.lower()]
                 if loss_cols:
                     st.line_chart(
@@ -223,7 +202,6 @@ with tab_metricas:
             
             with col_acc:
                 st.markdown("**Precisión (Accuracy)**")
-                # Buscar columnas de accuracy
                 acc_cols = [col for col in columnas_disponibles if 'acc' in col.lower()]
                 if acc_cols:
                     st.line_chart(
@@ -233,7 +211,6 @@ with tab_metricas:
                 else:
                     st.warning("No se encontraron datos de 'accuracy'")
             
-            # Mostrar learning rate si existe
             if 'lr' in columnas_disponibles:
                 st.markdown("**Tasa de Aprendizaje (Learning Rate)**")
                 st.line_chart(history_df['lr'], y_label="LR")
@@ -241,12 +218,10 @@ with tab_metricas:
                 st.markdown("**Tasa de Aprendizaje (Learning Rate)**")
                 st.line_chart(history_df['learning_rate'], y_label="LR")
         
-        # ===== SECCIÓN 4: LOG DE ENTRENAMIENTO =====
         if training_log is not None and not training_log.empty:
             with st.expander("📋 Ver Log Detallado de Entrenamiento"):
                 st.dataframe(training_log, use_container_width=True)
         
-        # ===== SECCIÓN 5: RESUMEN ESTADÍSTICO =====
         st.subheader("📊 Resumen Estadístico")
         
         col_res1, col_res2, col_res3 = st.columns(3)
@@ -264,7 +239,6 @@ with tab_metricas:
                 epocas = len(history.get('loss', []))
                 st.metric("Total de Épocas", epocas)
         
-        # Información de los archivos cargados
         with st.expander("ℹ️ Archivos de métricas cargados"):
             metrics_dir = Path("models/model_metrics")
             if metrics_dir.exists():

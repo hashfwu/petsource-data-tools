@@ -31,20 +31,16 @@ def load_model_with_auto_download():
     """Carga el modelo, descargándolo primero si es necesario"""
     
     with st.spinner("🔍 Verificando modelo..."):
-        # Descargar modelo si no existe
         model_path = download_model()
         
-        # Mostrar progreso
         st.info(f"📦 Modelo encontrado en: {model_path}")
     
-    # Cargar el modelo
     with st.spinner("🧠 Cargando modelo en memoria..."):
         import tensorflow as tf
         model = tf.keras.models.load_model(model_path)
     
     return model
 
-# Cargar modelo (solo una vez gracias a cache)
 try:
     model = load_model_with_auto_download()
     st.success("✅ Modelo listo para usar")
