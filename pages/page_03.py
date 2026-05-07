@@ -65,41 +65,68 @@ def load_training_log():
         return pd.read_csv(log_path)
     return None
 
-tab1, tab2 = st.tabs(["📸 Tomar foto", "📁 Subir imagen"])
+tab_prediccion, tab_metricas = st.tabs(["🔮 Predicción en Vivo", "📊 Métricas del Modelo"])
 image = None
 
-with tab1:
-    img = st.camera_input("Toma una foto de tu mascota")
-    if img:
-        image = Image.open(img)
-
-with tab2:
-    img = st.file_uploader("Sube una imagen", type=["jpg", "jpeg", "png"])
-    if img:
-        image = Image.open(img)
-
-if image and model_ready:
-    with st.spinner("Analizando..."):
-        img_array = preprocess_image(image, tuple((300, 300)))
-        predictions = model.predict(img_array, verbose=0)[0]
-        emociones = ["Enojado 😠", "Triste 😢", "Feliz 😊", "Relajado 😐"]
-        st.subheader("📊 Resultado del análisis")
-        col1, col2 = st.columns([1, 2])
-
-        with col1:
-            st.image(image, caption="Imagen analizada", use_container_width=True)
-        with col2:
-            emotion_idx = np.argmax(predictions)
-            confidence = predictions[emotion_idx]
+with tab_prediccion:
+    st.markdown("### Sube o toma una foto de tu mascota")
+    
+    col_camara, col_subida = st.columns(2)
+    
+    image = None
+    
+    with col_camara:
+        img = st.camera_input("📸 Tomar foto", key="camera_input")
+        if img:
+            image = Image.open(img)
+    
+    with col_subida:
+        img = st.file_uploader("📁 Subir imagen", type=["jpg", "jpeg", "png"], key="file_uploader")
+        if img:
+            image = Image.open(img)
+    
+    if image and model_ready:
+        with st.spinner("🔬 Analizando emociones..."):
+            img_array = preprocess_image(image, tuple((300, 300)))
+            predictions = model.predict(img_array, verbose=0)[0]
+            emociones = ["Enojado 😠", "Triste 😢", "Feliz 😊", "Relajado 😐"]
             
-            st.metric(
-                label="🎯 Emoción detectada",
-                value=f"{emociones[emotion_idx]}",
-                delta=f"Confianza: {confidence:.1%}"
-            )
+            st.subheader("📊 Resultado del análisis")
+            col1, col2 = st.columns([1, 2])
             
-            st.markdown("---")
-            st.write("### Distribución de emociones")
+            with col1:
+                st.image(image, caption="Imagen analizada", use_container_width=True)
             
-            for emo, prob in zip(emociones, predictions):
-                st.progress(float(prob), text=f"{emo}: {prob:.1%}")
+            with col2:
+                emotion_idx = np.argmax(predictions)
+                confidence = predictions[emotion_idx]
+                
+                st.metric(
+                    label="🎯 Emoción detectada",
+                    value=f"{emociones[emotion_idx]}",
+                    delta=f"Confianza: {confidence:.1%}"
+                )
+                
+                st.markdown("---")
+                st.write("### Distribución de emociones")
+                
+                # Colores para cada emoción
+                colores = {
+                    "Enojado 😠": "#ff4444",
+                    "Triste 😢": "#4444ff",
+                    "Feliz 😊": "#00cc44",
+                    "Relajado 😐": "#ffaa00"
+                }
+                
+                for emo, prob in zip(emociones, predictions):
+                    st.progress(float(prob), text=f"{emo}: {prob:.1%}")
+                
+                with st.expander("📈 Ver probabilidades exactas"):
+                    for emo, prob in zip(emociones, predictions):
+                        st.write(f"- {emo}: {prob:.4f} ({prob:.2%})")
+
+# with tab2:
+#     img = st.file_uploader("Sube una imagen", type=["jpg", "jpeg", "png"])
+#     if img:
+#         image = Image.open(img)
+
