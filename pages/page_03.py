@@ -3,6 +3,10 @@ import numpy as np
 from PIL import Image
 import tensorflow as tf
 from tensorflow.keras.applications.efficientnet import preprocess_input
+import json
+import pandas as pd
+import os
+from pathlib import Path
 
 st.set_page_config(page_title="Analizador de Emociones", page_icon="😊")
 
@@ -27,6 +31,39 @@ def preprocess_image(image, target_size=(300, 300)):
     img_array = preprocess_input(img_array)
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
+
+def load_training_history():
+    """Carga el historial de entrenamiento"""
+    history_path = "models/model_metrics/model_training_history.json"
+    if os.path.exists(history_path):
+        with open(history_path, 'r') as f:
+            return json.load(f)
+    return None
+
+@st.cache_data
+def load_classification_report():
+    """Carga el reporte de clasificación"""
+    report_path = "models/model_metrics/classification_report.json"
+    if os.path.exists(report_path):
+        with open(report_path, 'r') as f:
+            return json.load(f)
+    return None
+
+@st.cache_data
+def load_confusion_matrix():
+    """Carga la matriz de confusión"""
+    matrix_path = "models/model_metrics/confusion_matrix.csv"
+    if os.path.exists(matrix_path):
+        return pd.read_csv(matrix_path, index_col=0)
+    return None
+
+@st.cache_data
+def load_training_log():
+    """Carga el log de entrenamiento"""
+    log_path = "models/model_metrics/training_log.csv"
+    if os.path.exists(log_path):
+        return pd.read_csv(log_path)
+    return None
 
 tab1, tab2 = st.tabs(["📸 Tomar foto", "📁 Subir imagen"])
 image = None
