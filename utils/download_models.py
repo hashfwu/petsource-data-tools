@@ -30,10 +30,9 @@ def download_model(progress_bar=None):
         gdown.download(
             URL, 
             str(MODEL_PATH), 
-            quiet=False,
-            fuzzy=True  # Permite URLs más flexibles
+            quiet=False
         )
         return MODEL_PATH
     except Exception as e:
         # Fallback: intentar con URL directa de descarga
-        raise FileNotFoundError("No se encontró el modelo")
+        raise FileNotFoundError(f"No se encontró el modelo {e}")
