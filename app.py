@@ -12,8 +12,8 @@ with st.sidebar:
     st.markdown("---")
     
     st.page_link("app.py", label="Inicio", icon="🏠")
-    st.page_link("pages/page_01.py", label="Análisis", icon="📊")
-    st.page_link("pages/page_02.py", label="Historial", icon="📋")
+    # st.page_link("pages/page_01.py", label="Análisis", icon="📊")
+    # st.page_link("pages/page_02.py", label="Historial", icon="📋")
     st.page_link("pages/page_03.py", label="Analizador de Emociones", icon="😊")
 
 st.title("PetSource Data Tools")
