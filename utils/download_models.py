@@ -8,7 +8,9 @@ def download_model(progress_bar=None):
     
     MODEL_DIR = Path(__file__).parent.parent / "models"
     MODEL_PATH = MODEL_DIR / "dog_emotion_classifier.h5"
+    METRIC_PATH = MODEL_DIR / "model_metrics"
     URL = "https://drive.google.com/file/d/1ceGVgTTLos_b586g0HsdH6VQMuVQkEfo/view?usp=sharing"
+    URL2 = "https://drive.google.com/drive/folders/1VtVXTeXVd_O9ENiUBGE9_GoVlOQ-cmiZ?usp=sharing"
     
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     
@@ -32,6 +34,13 @@ def download_model(progress_bar=None):
             str(MODEL_PATH), 
             quiet=False
         )
+        print("Modelo descargado")
+        gdown.download_folder(
+            url=URL2,
+            output=str(METRIC_PATH), 
+            quiet=False
+        )
+        print("Metricas descargadas")
         return MODEL_PATH
     except Exception as e:
         # Fallback: intentar con URL directa de descarga
